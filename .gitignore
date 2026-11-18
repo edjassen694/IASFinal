@@ -1,0 +1,45 @@
+# Environment files (NEVER commit secrets or API keys)
+.env
+.env.*
+!.env.example
+*.env
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/vendor/
+
+# Builds and production outputs
+frontend/dist/
+frontend/dist-ssr/
+
+# SQLite database files
+*.sqlite
+*.sqlite-journal
+backend/database/database.sqlite
+backend/database/database.sqlite-journal
+
+# Logs & caches
+*.log
+backend/storage/logs/
+frontend/.vite/
+.npm/
+
+# Laravel storage files
+backend/storage/app/public/
+backend/storage/framework/cache/
+backend/storage/framework/sessions/
+backend/storage/framework/views/
+backend/bootstrap/cache/*.php
+
+# IDE & OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
