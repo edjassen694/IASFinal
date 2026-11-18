@@ -1,4 +1,4 @@
-FROM php:8.3-cli-alpine
+FROM php:8.4-cli-alpine
 
 # Install system libraries needed by Laravel and PHP extensions
 RUN apk add --no-cache \
@@ -25,7 +25,7 @@ WORKDIR /var/www
 # Copy composer files first for optimal Docker layer caching
 COPY composer.json composer.lock ./
 
-# Install dependencies with --ignore-platform-reqs to guarantee installation
+# Install dependencies
 RUN composer install --no-dev --no-scripts --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 # Copy all application code
