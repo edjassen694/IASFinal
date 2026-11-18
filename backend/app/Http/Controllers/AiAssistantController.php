@@ -146,6 +146,19 @@ TEXT;
             'parts' => [['text' => $message]],
         ];
 
+        $payload = [
+            'system_instruction' => [
+                'parts' => [
+                    ['text' => $systemInstruction],
+                ],
+            ],
+            'contents' => $contents,
+            'generationConfig' => [
+                'temperature' => 0.7,
+                'maxOutputTokens' => 1500,
+            ],
+        ];
+
         // Try gemini-3.5-flash-lite first (verified working), then fallback options
         $models = ['gemini-3.5-flash-lite', 'gemini-3.7-flash', 'gemini-3.5-flash', 'gemini-3.8-flash'];
         $data = null;
