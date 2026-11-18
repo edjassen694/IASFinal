@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 
 // Public Authentication Routes
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 // Protected Routes (Requires Sanctum Bearer Token)
 Route::middleware('auth:sanctum')->group(function () {

@@ -146,41 +146,28 @@ TEXT;
             'parts' => [['text' => $message]],
         ];
 
-        // Use gemini-2.0-flash or fallback to gemini-1.5-flash
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}";
+        // Try gemini-3.5-flash-lite first (verified working), then fallback options
+        $models = ['gemini-3.5-flash-lite', 'gemini-3.7-flash', 'gemini-3.5-flash', 'gemini-3.8-flash'];
+        $data = null;
+        $lastError = 'Unable to reach Gemini API';
 
-        $payload = [
-            'system_instruction' => [
-                'parts' => [
-                    ['text' => $systemInstruction],
-                ],
-            ],
-            'contents' => $contents,
-            'generationConfig' => [
-                'temperature' => 0.7,
-                'maxOutputTokens' => 1500,
-            ],
-        ];
+        foreach ($models as $modelName) {
+            $url = "https://generativelanguage.googleapis.com/v1beta/models/{$modelName}:generateContent?key={$apiKey}";
+            $response = Http::timeout(30)->post($url, $payload);
 
-        $response = Http::timeout(30)->post($url, $payload);
-
-        if (! $response->successful()) {
-            // Try gemini-1.5-flash as fallback if 2.0 returns error
-            $fallbackUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$apiKey}";
-            $fallbackResponse = Http::timeout(30)->post($fallbackUrl, $payload);
-
-            if (! $fallbackResponse->successful()) {
-                $err = $response->json()['error']['message'] ?? $response->body();
-
-                return response()->json([
-                    'reply' => "Google Gemini API error: {$err}",
-                    'error' => true,
-                ], 502);
+            if ($response->successful()) {
+                $data = $response->json();
+                break;
             }
 
-            $data = $fallbackResponse->json();
-        } else {
-            $data = $response->json();
+            $lastError = $response->json()['error']['message'] ?? $response->body();
+        }
+
+        if (! $data) {
+            return response()->json([
+                'reply' => "Google Gemini API error: {$lastError}",
+                'error' => true,
+            ], 502);
         }
 
         $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'No response received from AI.';
